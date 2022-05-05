@@ -3,38 +3,25 @@
 public class LogicalClockEvent
 {
     public string Id { get; }
+    
+    public string Name { get; }
 
     public int Counter { get; }
     
-    public LogicalClockEvent(string id, int counter)
+    public LogicalClockEvent(string id, string name, int counter)
     {
-        Counter = counter;
         Id = id;
+        Name = name;
+        Counter = counter;
     }
 
     public bool IsConcurrentTo(LogicalClockEvent other)
     {
         return other.Counter == Counter && other.Id != Id;
     }
-}
 
-public class LogicalClockEvent<TEventPayload>
-{
-    public string Id { get; }
-
-    public int Counter { get; }
-    
-    public TEventPayload Payload { get; }
-    
-    public LogicalClockEvent(string id, int counter, TEventPayload payload)
+    public bool HappenedBefore(LogicalClockEvent other)
     {
-        Counter = counter;
-        Id = id;
-        Payload = payload;
-    }
-
-    public bool IsConcurrentTo(LogicalClockEvent<TEventPayload> other)
-    {
-        return other.Counter == Counter && other.Id != Id;
+        return Counter < other.Counter;
     }
 }

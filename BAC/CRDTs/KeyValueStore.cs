@@ -6,92 +6,76 @@ namespace BAC.CRDTs;
 
 public class KeyValueStore : IKeyValueStore<string>
 {
-    private readonly LogicalClock<string> _logicalClock = new(Guid.NewGuid().ToString());
-    
-    private readonly Dictionary<string, string> _store = new();
+    private readonly CrdtEngine _crdtEngine = new();
 
-    private readonly Dictionary<string, Operation> _operations = new();
+    private readonly Dictionary<string, ReplicationLog> _replicationLogs = new();
+
+    private readonly LogicalClock _logicalClock;
+    
+    public string Identifier { get; }
+
+    public KeyValueStore(string identifier)
+    {
+        Identifier = identifier;
+        _logicalClock = new LogicalClock(identifier);
+        _replicationLogs[identifier] = new ReplicationLog();
+    }
 
     public void Put(string key, string value)
     {
-        var clockEvent = _logicalClock.CreateEvent(key);
-        _operations[key] = new Operation(OperationType.Put, clockEvent, value);
-        _store[key] = value;
+        var clockEvent = _logicalClock.CreateEvent();
+        var operation = new Operation(clockEvent, key, value);
+        _crdtEngine.ApplyOperation(operation);
+        SetSafePoint(operation);
     }
 
     public string? Get(string key)
     {
-        return _store.ContainsKey(key) ? _store[key] : null;
+        var operation = _crdtEngine.GetOperation(key);
+        return operation?.Type is OperationType.Put ? operation.Value : null;
     }
 
     public void Remove(string key)
     {
-        if (!_store.ContainsKey(key)) return;
-        var clockEvent = _logicalClock.CreateEvent(key);
-        _operations[key] = new Operation(OperationType.Remove, clockEvent);
-        _store.Remove(key);
+        if (Get(key) is null) return;
+        
+        var clockEvent = _logicalClock.CreateEvent();
+        var operation = new Operation(clockEvent, key);
+        _crdtEngine.ApplyOperation(operation);
+        SetSafePoint(operation);
     }
     
     public void Sync(KeyValueStore other)
     {
         var operations = other.GetOperations();
-        operations.ToList().ForEach(kv => SyncOperation(kv.Key, kv.Value));
+        if (!_replicationLogs.ContainsKey(other.Identifier)) _replicationLogs[other.Identifier] = new ReplicationLog();
+
+        foreach (var (_, operation) in operations)
+        {
+            var replicationLog = _replicationLogs[other.Identifier];
+            if (replicationLog.IsPastOperation(operation) || IsPastOperation(operation)) continue;
+
+            operation.ClockEvent = _logicalClock.CreateReceiveEvent(operation.ClockEvent);
+            _crdtEngine.ApplyOperation(operation);
+            replicationLog.SetSafePoint(operation);
+            SetSafePoint(operation);
+        }
     }
 
     private Dictionary<string, Operation> GetOperations()
     {
-        return _operations;
+        return _crdtEngine.GetOperations();
     }
     
-    private void SyncOperation(string key, Operation operation)
+    private void SetSafePoint(Operation operation)
     {
-        _logicalClock.ReceiveEvent(operation.ClockEvent);
-        var concurrentEvents = _logicalClock.GetConcurrentEvents(operation.ClockEvent);
-        var conflictExists = concurrentEvents.Any(@event => @event.Payload == key);
-
-        if (conflictExists)
-        {
-            ResolveConflict(key, operation);
-            return;
-        }
-
-        ApplyOperation(key, operation);
+        var replicationLog = _replicationLogs[Identifier];
+        replicationLog.SetSafePoint(operation);
     }
 
-    private void ResolveConflict(string key, Operation concurrentOperation)
+    private bool IsPastOperation(Operation operation)
     {
-        var localOperation = _operations[key];
-            
-        // Favour local operation over concurrent one
-        if (localOperation.Type == concurrentOperation.Type)
-        {
-            return;
-        }
-
-        // Favour put over remove
-        if (concurrentOperation.Type is OperationType.Put)
-        {
-            _store[key] = concurrentOperation.Value;
-            _operations[key] = concurrentOperation;
-        }
-    }
-    
-    private void ApplyOperation(string key, Operation operation)
-    {
-        switch (operation.Type)
-        {
-            case OperationType.Put:
-                _operations[key] = operation;
-                _store[key] = operation.Value;
-                return;
-                    
-            case OperationType.Remove:
-                _operations[key] = operation;
-                _store.Remove(key);
-                return;
-            
-            default:
-                return;
-        }
+        var replicationLog = _replicationLogs[Identifier];
+        return replicationLog.IsPastOperation(operation);
     }
 }

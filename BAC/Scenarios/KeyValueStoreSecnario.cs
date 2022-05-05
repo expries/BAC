@@ -6,8 +6,8 @@ public static class KeyValueStoreScenario
 {
     public static void Run()
     {
-        var kvA = new KeyValueStore();
-        var kvB = new KeyValueStore();
+        var kvA = new KeyValueStore("kvA");
+        var kvB = new KeyValueStore("kvB");
         
         kvA.Put("a", "Milk!");
 
@@ -21,6 +21,10 @@ public static class KeyValueStoreScenario
         kvA.Remove("b");
         kvB.Sync(kvA);
 
-        ;
+        Console.WriteLine(kvA.Get("a"));
+        Console.WriteLine(kvA.Get("b"));
+
+        Console.WriteLine(kvB.Get("a"));
+        Console.WriteLine(kvB.Get("b"));
     }
 }

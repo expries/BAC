@@ -14,13 +14,13 @@ public static class ConcurrencyScenario
         var a2 = a.CreateEvent();
         var b1 = b.CreateEvent();
 
-        b.ReceiveEvent(a2);
+        b.CreateReceiveEvent(a2);
 
         var b3 = b.CreateEvent();
         var a3 = a.CreateEvent();
         var b4 = b.CreateEvent();
 
-        a.ReceiveEvent(b4);
+        a.CreateReceiveEvent(b4);
 
         var b5 = b.CreateEvent();
 
