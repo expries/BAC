@@ -2,14 +2,17 @@
 
 namespace BAC.Clocks;
 
-public class LogicalClock : AbstractClock
+public class LogicalClock
 {
-    private readonly List<LogicalClockEvent> _events = new();
-    
     private int _counter;
+    
+    private string _name;
+    
+    private int _nameCounter;
 
-    public LogicalClock(string name) : base(name)
+    public LogicalClock(string name)
     {
+        _name = name;
     }
 
     public LogicalClockEvent CreateEvent()
@@ -18,7 +21,6 @@ public class LogicalClock : AbstractClock
         var name = GenerateEventName();
         var id = Guid.NewGuid().ToString();
         var clockEvent = new LogicalClockEvent(id, name, _counter);
-        _events.Add(clockEvent);
         return clockEvent;
     }
 
@@ -28,10 +30,5 @@ public class LogicalClock : AbstractClock
         return CreateEvent();
     }
 
-    public List<LogicalClockEvent> GetConcurrentEvents(LogicalClockEvent clockEvent)
-    {
-        return _events.Where(e => e.IsConcurrentTo(clockEvent)).ToList();
-    }
-
-    public List<LogicalClockEvent> GetEvents() => _events;
+    private string GenerateEventName() => $"{_name}{++_nameCounter}";
 }

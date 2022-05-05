@@ -1,4 +1,6 @@
-﻿namespace BAC.CRDTs.State;
+﻿using BAC.CRDTs.State;
+
+namespace BAC.CRDTs.Interfaces;
 
 public interface ICrdtEngine
 {
@@ -6,5 +8,5 @@ public interface ICrdtEngine
 
     public Operation? GetOperation(string key);
 
-    public Dictionary<string, Operation> GetOperations();
+    public List<Operation> GetOperations();
 }

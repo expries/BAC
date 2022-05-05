@@ -1,3 +1,3 @@
 ﻿using BAC.Scenarios;
 
-KeyValueStoreScenario.Run();
+CrdtBasedOnLogicalClock.Show();

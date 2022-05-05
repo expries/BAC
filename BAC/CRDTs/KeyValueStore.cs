@@ -1,4 +1,5 @@
 ﻿using BAC.Clocks;
+using BAC.CRDTs.Engines;
 using BAC.CRDTs.Interfaces;
 using BAC.CRDTs.State;
 
@@ -6,19 +7,20 @@ namespace BAC.CRDTs;
 
 public class KeyValueStore : IKeyValueStore<string>
 {
-    private readonly CrdtEngine _crdtEngine = new();
+    private readonly ICrdtEngine _crdtEngine;
 
     private readonly Dictionary<string, ReplicationLog> _replicationLogs = new();
 
     private readonly LogicalClock _logicalClock;
-    
-    public string Identifier { get; }
 
-    public KeyValueStore(string identifier)
+    private string Identifier { get; }
+
+    public KeyValueStore(string identifier, ICrdtEngine crdtEngine)
     {
         Identifier = identifier;
         _logicalClock = new LogicalClock(identifier);
         _replicationLogs[identifier] = new ReplicationLog();
+        _crdtEngine = crdtEngine;
     }
 
     public void Put(string key, string value)
@@ -50,7 +52,7 @@ public class KeyValueStore : IKeyValueStore<string>
         var operations = other.GetOperations();
         if (!_replicationLogs.ContainsKey(other.Identifier)) _replicationLogs[other.Identifier] = new ReplicationLog();
 
-        foreach (var (_, operation) in operations)
+        foreach (var operation in operations)
         {
             var replicationLog = _replicationLogs[other.Identifier];
             if (replicationLog.IsPastOperation(operation) || IsPastOperation(operation)) continue;
@@ -62,7 +64,7 @@ public class KeyValueStore : IKeyValueStore<string>
         }
     }
 
-    private Dictionary<string, Operation> GetOperations()
+    private List<Operation> GetOperations()
     {
         return _crdtEngine.GetOperations();
     }

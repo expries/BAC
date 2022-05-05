@@ -1,6 +1,9 @@
-﻿namespace BAC.CRDTs.State;
+﻿using BAC.CRDTs.Interfaces;
+using BAC.CRDTs.State;
 
-public class CrdtEngine : ICrdtEngine
+namespace BAC.CRDTs.Engines;
+
+public class LogicalClockCrdtEngine : ICrdtEngine
 {
     private readonly Dictionary<string, Operation> _operations = new();
 
@@ -51,8 +54,8 @@ public class CrdtEngine : ICrdtEngine
         return _operations.ContainsKey(key) ? _operations[key] : null;
     }
 
-    public Dictionary<string, Operation> GetOperations()
+    public List<Operation> GetOperations()
     {
-        return _operations;
+        return _operations.Values.ToList();
     }
 }
