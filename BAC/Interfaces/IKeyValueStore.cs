@@ -1,4 +1,4 @@
-﻿namespace BAC.CRDTs.Interfaces;
+﻿namespace BAC.Interfaces;
 
 public interface IKeyValueStore<TValue>
 {

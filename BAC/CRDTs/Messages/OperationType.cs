@@ -1,4 +1,4 @@
-﻿namespace BAC.CRDTs.State;
+﻿namespace BAC.CRDTs.Messages;
 
 public enum OperationType
 {

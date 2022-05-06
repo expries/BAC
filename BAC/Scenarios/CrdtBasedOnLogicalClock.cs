@@ -1,5 +1,4 @@
 ﻿using BAC.CRDTs;
-using BAC.CRDTs.Engines;
 
 namespace BAC.Scenarios;
 
@@ -7,43 +6,55 @@ public static class CrdtBasedOnLogicalClock
 {
     public static void Show()
     {
-        var engine = new LogicalClockCrdtEngine();
-        var kvA = new KeyValueStore("kvA", engine);
-        var kvB = new KeyValueStore("kvB", engine);
-        var kvC = new KeyValueStore("kvC", engine);
-
-        kvA.Put("c", "Banana");
+        
+        var kvA = new KeyValueStore(1, new LamportClockCrdt());
+        var kvB = new KeyValueStore(2, new LamportClockCrdt());
+        var kvC = new KeyValueStore(3, new LamportClockCrdt());
+        
+        // A - Changes
         kvA.Put("a", "Milk!");
+        kvA.Put("c", "Banana");
 
+        // B - Changes
         kvB.Put("a", "Chocolate");
         kvB.Remove("a");
-        
         kvB.Put("b", "Lemon");
-        
+
+        // C - Sync to A
         kvC.Sync(kvA);
         
+        // C - Changes
         kvC.Put("c", "Pear");
         
         kvA.Sync(kvB);
         kvB.Sync(kvA);
-
-        kvA.Remove("b");
-        kvB.Sync(kvA);
         
-        kvC.Sync(kvA);
+        kvA.Remove("b");
+        
+        kvB.Sync(kvA);
+        kvC.Sync(kvB);
+        
         kvA.Sync(kvC);
         kvB.Sync(kvC);
 
-        Console.WriteLine(kvA.Get("a"));
-        Console.WriteLine(kvA.Get("b"));
-        Console.WriteLine(kvA.Get("c"));
+        PrintKeyValueStores(kvA, kvB, kvC);
+    }
 
-        Console.WriteLine(kvB.Get("a"));
-        Console.WriteLine(kvB.Get("b"));
-        Console.WriteLine(kvB.Get("c"));
+    private static void PrintKeyValueStores(KeyValueStore kvA, KeyValueStore kvB, KeyValueStore kvC)
+    {
+        Console.WriteLine("Keys for key-value-store A: ");
+        Console.WriteLine("a: " + kvA.Get("a"));
+        Console.WriteLine("b: " + kvA.Get("b"));
+        Console.WriteLine("c: " + kvA.Get("c"));
+
+        Console.WriteLine("Keys for key-value-store B: ");
+        Console.WriteLine("a: " + kvB.Get("a"));
+        Console.WriteLine("b: " + kvB.Get("b"));
+        Console.WriteLine("c: " + kvB.Get("c"));
         
-        Console.WriteLine(kvC.Get("a"));
-        Console.WriteLine(kvC.Get("b"));
-        Console.WriteLine(kvC.Get("c"));
+        Console.WriteLine("Keys for key-value-store C: ");
+        Console.WriteLine("a: " + kvC.Get("a"));
+        Console.WriteLine("b: " + kvC.Get("b"));
+        Console.WriteLine("c: " + kvC.Get("c"));
     }
 }
