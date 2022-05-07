@@ -1,15 +1,13 @@
-﻿using BAC.CRDTs;
-
-namespace BAC.Scenarios;
+﻿namespace BAC.Scenarios;
 
 public static class CrdtBasedOnLogicalClock
 {
     public static void Show()
     {
         
-        var kvA = new KeyValueStore(1, new LamportClockCrdt());
-        var kvB = new KeyValueStore(2, new LamportClockCrdt());
-        var kvC = new KeyValueStore(3, new LamportClockCrdt());
+        var kvA = new KeyValueStore(1);
+        var kvB = new KeyValueStore(2);
+        var kvC = new KeyValueStore(3);
         
         // A - Changes
         kvA.Put("a", "Milk!");

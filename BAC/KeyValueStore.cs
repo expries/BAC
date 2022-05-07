@@ -1,4 +1,5 @@
 ﻿using BAC.Clocks;
+using BAC.CRDTs;
 using BAC.CRDTs.Messages;
 using BAC.CRDTs.Replication;
 using BAC.Interfaces;
@@ -7,7 +8,7 @@ namespace BAC;
 
 public class KeyValueStore : IKeyValueStore<string>
 {
-    private readonly ICrdt _crdt;
+    private readonly PutWinsCrdt _crdt;
 
     private readonly Dictionary<int, ReplicationLog> _replicationLogs = new();
 
@@ -15,11 +16,11 @@ public class KeyValueStore : IKeyValueStore<string>
 
     private int NodeId { get; }
 
-    public KeyValueStore(int nodeId, ICrdt crdt)
+    public KeyValueStore(int nodeId)
     {
         NodeId = nodeId;
         _replicationLogs[nodeId] = new ReplicationLog();
-        _crdt = crdt;
+        _crdt = new PutWinsCrdt();
     }
 
     public string? Get(string key)
@@ -32,7 +33,7 @@ public class KeyValueStore : IKeyValueStore<string>
     {
         _lamportClock.Increment();
 
-        var putOperation = new Operation(key, value, NodeId, _lamportClock.Counter);
+        var putOperation = new LamportClockOperation(key, value, NodeId, _lamportClock.Counter);
 
         _crdt.Update(putOperation);
 
@@ -45,7 +46,7 @@ public class KeyValueStore : IKeyValueStore<string>
         if (Get(key) is null) return;
         
         _lamportClock.Increment();
-        var removeOperation = new Operation(key, NodeId, _lamportClock.Counter);
+        var removeOperation = new LamportClockOperation(key, NodeId, _lamportClock.Counter);
         
         _crdt.Update(removeOperation);
         
@@ -56,13 +57,12 @@ public class KeyValueStore : IKeyValueStore<string>
     public void Sync(KeyValueStore other)
     {
         var localOperations = other.GetLocalOperations();
-
+        var localReplicationLog = GetReplicationLogByNodeId(NodeId);
+        var replicationLog = GetReplicationLogByNodeId(other.NodeId);
+        
         foreach (var operation in localOperations)
         {
             // Do not apply the operation if it was applied locally
-            var localReplicationLog = GetReplicationLogByNodeId(NodeId);
-            var replicationLog = GetReplicationLogByNodeId(other.NodeId);
-            
             if (replicationLog.SafePointIsAheadOfOperation(operation) || 
                 localReplicationLog.SafePointIsAheadOfOperation(operation)) continue;
             
@@ -82,7 +82,7 @@ public class KeyValueStore : IKeyValueStore<string>
     /// Get all the local operations
     /// </summary>
     /// <returns></returns>
-    private List<Operation> GetLocalOperations()
+    private List<LamportClockOperation> GetLocalOperations()
     {
         return _crdt.GetOperations();
     }

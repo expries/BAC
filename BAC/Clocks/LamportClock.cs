@@ -11,9 +11,9 @@ public class LamportClock
         Counter++;
     }
 
-    public void ReceiveMessage(Operation operation)
+    public void ReceiveMessage(LamportClockOperation lamportClockOperation)
     {
-        if (operation.Metadata.Counter > Counter) Counter = operation.Metadata.Counter;
+        if (lamportClockOperation.Metadata.Counter > Counter) Counter = lamportClockOperation.Metadata.Counter;
         Increment();
     }
 }

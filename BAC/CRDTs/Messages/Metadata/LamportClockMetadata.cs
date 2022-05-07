@@ -1,6 +1,6 @@
-﻿namespace BAC.CRDTs.Messages;
+﻿namespace BAC.CRDTs.Messages.Metadata;
 
-public class Metadata
+public class LamportClockMetadata
 {
     public string OperationId { get; set; }
     
@@ -8,7 +8,7 @@ public class Metadata
 
     public int Counter { get; set; }
     
-    public Metadata(string operationId, int nodeId, int counter)
+    public LamportClockMetadata(string operationId, int nodeId, int counter)
     {
         OperationId = operationId;
         NodeId = nodeId;

@@ -4,15 +4,15 @@ namespace BAC.CRDTs.Replication;
 
 public class ReplicationLog
 {
-    private readonly List<Operation> _operations = new();
+    private readonly List<LamportClockOperation> _operations = new();
     
-    public void SetSafePoint(Operation operation)
+    public void SetSafePoint(LamportClockOperation lamportClockOperation)
     {
-        _operations.Add(operation);
+        _operations.Add(lamportClockOperation);
     }
 
-    public bool SafePointIsAheadOfOperation(Operation operation)
+    public bool SafePointIsAheadOfOperation(LamportClockOperation lamportClockOperation)
     {
-        return _operations.Any(x => x.Metadata.OperationId == operation.Metadata.OperationId);
+        return _operations.Any(x => x.Metadata.OperationId == lamportClockOperation.Metadata.OperationId);
     }
 }
