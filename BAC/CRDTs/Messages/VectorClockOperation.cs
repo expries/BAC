@@ -2,20 +2,14 @@
 
 namespace BAC.CRDTs.Messages;
 
-public class VectorClockOperation : OperationMessageBase
+public class VectorClockOperation : OperationBase<VectorClockMetadata>
 {
-    public VectorClockMetadata Metadata { get; }
-
-    public VectorClockOperation(string key, string value, int nodeId, Dictionary<int, int> vector) : base(key, value)
+    public VectorClockOperation(string key, string value, VectorClockMetadata metadata) : base(key, value, metadata)
     {
-        var operationId = Guid.NewGuid().ToString();
-        Metadata = new VectorClockMetadata(operationId, nodeId, vector);
     }
     
-    public VectorClockOperation(string key, int nodeId, Dictionary<int, int> vector) : base(key)
+    public VectorClockOperation(string key, VectorClockMetadata metadata) : base(key, metadata)
     {
-        var operationId = Guid.NewGuid().ToString();
-        Metadata = new VectorClockMetadata(operationId, nodeId, vector);
     }
 
     public bool IsConcurrentTo(VectorClockOperation other)

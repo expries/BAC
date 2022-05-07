@@ -2,20 +2,14 @@
 
 namespace BAC.CRDTs.Messages;
 
-public class LamportClockOperation : OperationMessageBase
+public class LamportClockOperation : OperationBase<LamportClockMetadata>
 {
-    public LamportClockMetadata Metadata { get; }
-
-    public LamportClockOperation(string key, string value, int nodeId, int counter) : base(key, value)
+    public LamportClockOperation(string key, string value, LamportClockMetadata metadata) : base(key, value, metadata)
     {
-        var operationId = Guid.NewGuid().ToString();
-        Metadata = new LamportClockMetadata(operationId, nodeId, counter);
     }
     
-    public LamportClockOperation(string key, int nodeId, int counter) : base(key)
+    public LamportClockOperation(string key, LamportClockMetadata metadata) : base(key, metadata)
     {
-        var operationId = Guid.NewGuid().ToString();
-        Metadata = new LamportClockMetadata(operationId, nodeId, counter);
     }
 
     public bool IsConcurrentTo(LamportClockOperation other)

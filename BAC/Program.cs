@@ -1,3 +1,4 @@
 ﻿using BAC.Scenarios;
 
-CrdtBasedOnLogicalClock.Show();
+LastWriteWinsKvStoreDemo.Show();
+//PutWinsKvStoreDemo.Show();

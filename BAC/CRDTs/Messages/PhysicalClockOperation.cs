@@ -2,29 +2,25 @@
 
 namespace BAC.CRDTs.Messages;
 
-public class PhysicalClockOperation : OperationMessageBase
+public class PhysicalClockOperation : OperationBase<PhysicalClockMetadata>
 {
-    public PhysicalClockMetadata Metadata { get; }
-
-    public PhysicalClockOperation(string key, string value, int nodeId, DateTime timestamp) : base(key, value)
+    public PhysicalClockOperation(string key, string value, PhysicalClockMetadata metadata) : base(key, value, metadata)
     {
-        var operationId = Guid.NewGuid().ToString();
-        Metadata = new PhysicalClockMetadata(operationId, nodeId, timestamp);
     }
     
-    public PhysicalClockOperation(string key, int nodeId, DateTime timestamp) : base(key)
+    public PhysicalClockOperation(string key, PhysicalClockMetadata metadata) : base(key, metadata)
     {
-        var operationId = Guid.NewGuid().ToString();
-        Metadata = new PhysicalClockMetadata(operationId, nodeId, timestamp);
     }
 
     public bool HappenedBefore(PhysicalClockOperation other)
     {
+        bool test = Metadata.Timestamp < other.Metadata.Timestamp; 
         return Metadata.Timestamp < other.Metadata.Timestamp;
     }
 
     public bool HappenedAfter(PhysicalClockOperation other)
     {
+        bool test = Metadata.Timestamp > other.Metadata.Timestamp;
         return Metadata.Timestamp > other.Metadata.Timestamp;
     }
 }

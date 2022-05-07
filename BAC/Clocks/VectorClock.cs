@@ -1,4 +1,4 @@
-﻿using BAC.CRDTs.Messages.Metadata;
+﻿using BAC.CRDTs.Messages;
 
 namespace BAC.Clocks;
 
@@ -14,23 +14,21 @@ public class VectorClock
         Vector[nodeId] = 0;
     }
 
-    public LamportClockMetadata CreateMessage()
+    public void Increment()
     {
         Vector[_nodeId]++;
-        var id = Guid.NewGuid().ToString();
-        var clockEvent = new LamportClockMetadata(id, _nodeId, Vector[_nodeId]);
-        return clockEvent;
     }
 
-    public LamportClockMetadata CreateReceiveMessage(LamportClockMetadata clockLamportClockMetadata)
+    public void ReceiveMessage(LamportClockOperation operation)
     {
-        var clockCounter = GetClockCounterByNodeId(clockLamportClockMetadata.NodeId);
-        if (clockLamportClockMetadata.Counter > clockCounter)
+        var clockCounter = GetClockCounterByNodeId(operation.Metadata.NodeId);
+        
+        if (operation.Metadata.Counter > clockCounter)
         {
-            Vector[clockLamportClockMetadata.NodeId] = clockLamportClockMetadata.Counter;
+            Vector[operation.Metadata.NodeId] = operation.Metadata.Counter;
         }
 
-        return CreateMessage();
+        Increment();
     }
 
     public Dictionary<int, int> GetVector()
