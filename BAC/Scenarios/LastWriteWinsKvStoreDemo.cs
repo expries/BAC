@@ -1,5 +1,5 @@
-﻿using BAC.Clocks.PhysicalTimeProviders;
-using BAC.CRDTs;
+﻿using BAC.CRDTs;
+using BAC.CRDTs.Clocks.PhysicalTimeProviders;
 
 namespace BAC.Scenarios;
 

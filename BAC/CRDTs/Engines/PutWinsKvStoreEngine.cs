@@ -1,8 +1,8 @@
-﻿using BAC.Clocks;
+﻿using BAC.CRDTs.Clocks;
+using BAC.CRDTs.Interfaces;
 using BAC.CRDTs.Messages;
 using BAC.CRDTs.Messages.Metadata;
 using BAC.CRDTs.Messages.Operations;
-using BAC.Interfaces;
 
 namespace BAC.CRDTs.Engines;
 

@@ -1,6 +1,6 @@
-﻿using BAC.CRDTs.Messages;
+﻿using BAC.CRDTs.Interfaces;
+using BAC.CRDTs.Messages;
 using BAC.CRDTs.Replication;
-using BAC.Interfaces;
 
 namespace BAC.CRDTs;
 

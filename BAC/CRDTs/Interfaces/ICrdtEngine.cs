@@ -1,4 +1,4 @@
-﻿namespace BAC.Interfaces;
+﻿namespace BAC.CRDTs.Interfaces;
 
 /// <summary>
 /// Defines the functionality of a operation-based CRDT

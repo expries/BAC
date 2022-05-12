@@ -1,6 +1,6 @@
 ﻿using BAC.CRDTs.Messages.Operations;
 
-namespace BAC.Clocks;
+namespace BAC.CRDTs.Clocks;
 
 public class LamportClock
 {

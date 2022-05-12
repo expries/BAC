@@ -1,8 +1,8 @@
-﻿using BAC.Clocks.PhysicalTimeProviders;
+﻿using BAC.CRDTs.Clocks.PhysicalTimeProviders;
+using BAC.CRDTs.Interfaces;
 using BAC.CRDTs.Messages;
 using BAC.CRDTs.Messages.Metadata;
 using BAC.CRDTs.Messages.Operations;
-using BAC.Interfaces;
 
 namespace BAC.CRDTs.Engines;
 
