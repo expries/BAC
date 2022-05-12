@@ -3,6 +3,10 @@ using BAC.CRDTs;
 
 namespace BAC.Scenarios;
 
+/// <summary>
+/// Sample scenario of a key-value store that is replicated twice and
+/// uses a last-write-wins CRDT for conflict resolution
+/// </summary>
 public static class LastWriteWinsKvStoreDemo
 {
     public static void Show()

@@ -2,12 +2,16 @@
 using BAC.CRDTs.Messages;
 using BAC.CRDTs.Messages.Metadata;
 using BAC.CRDTs.Messages.Operations;
+using BAC.Interfaces;
 
 namespace BAC.CRDTs.Engines;
 
+/// <summary>
+/// A CRDT engine that prioritizes put over remove when handling concurrent writes.
+/// Concurrency is detected using vector clocks.
+/// </summary>
 public class PutWinsKvStoreEngine : ICrdtEngine<VectorClockOperation>
 {
-
     private readonly VectorClock _vectorClock;
     
     private int NodeId { get; }

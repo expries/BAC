@@ -1,5 +1,8 @@
 ﻿namespace BAC.CRDTs.Messages.Metadata;
 
+/// <summary>
+/// Metadata that is attached to an operation carrying a vector clock
+/// </summary>
 public class VectorClockMetadata : MetadataBase
 {
     public int NodeId { get; set; }

@@ -1,10 +1,16 @@
-﻿using BAC.CRDTs.Engines;
-using BAC.CRDTs.Messages;
+﻿using BAC.CRDTs.Messages;
 using BAC.CRDTs.Replication;
+using BAC.Interfaces;
 
 namespace BAC.CRDTs;
 
-public class ReplicatedKvStore<TOperation, TMetadata> 
+/// <summary>
+/// Key-Value store that uses any operation-based CRDT for conflict resolution and handles
+/// replication of operations
+/// </summary>
+/// <typeparam name="TOperation"></typeparam>
+/// <typeparam name="TMetadata"></typeparam>
+public class ReplicatedKvStore<TOperation, TMetadata> : IKeyValueStore 
     where TOperation : OperationBase<TMetadata> 
     where TMetadata : MetadataBase 
 {
@@ -61,7 +67,7 @@ public class ReplicatedKvStore<TOperation, TMetadata>
         ReplicationLog<TOperation, TMetadata> replicaLog, 
         TOperation operation)
     {
-        if (log.OperationWasApplied(operation) || replicaLog.OperationWasApplied(operation))
+        if (log.OperationWasReplicated(operation) || replicaLog.OperationWasReplicated(operation))
         {
             return;
         }

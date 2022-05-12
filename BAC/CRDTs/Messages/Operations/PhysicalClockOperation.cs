@@ -2,6 +2,9 @@
 
 namespace BAC.CRDTs.Messages.Operations;
 
+/// <summary>
+/// Operation carrying a physical clock timestamp
+/// </summary>
 public class PhysicalClockOperation : OperationBase<PhysicalClockMetadata>
 {
     public PhysicalClockOperation(string key, string value, PhysicalClockMetadata metadata) : base(key, value, metadata)

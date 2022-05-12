@@ -2,9 +2,14 @@
 using BAC.CRDTs.Messages;
 using BAC.CRDTs.Messages.Metadata;
 using BAC.CRDTs.Messages.Operations;
+using BAC.Interfaces;
 
 namespace BAC.CRDTs.Engines;
 
+/// <summary>
+/// A CRDT engine that on conflict preserves the value with the
+/// most recent timestamp
+/// </summary>
 public class LastWriteWinsKvStoreEngine : ICrdtEngine<PhysicalClockOperation>
 {
     private readonly ITimeProvider _timeProvider;
@@ -14,7 +19,7 @@ public class LastWriteWinsKvStoreEngine : ICrdtEngine<PhysicalClockOperation>
     public Dictionary<string, PhysicalClockOperation> Operations { get; } = new();
     
     public Dictionary<string, string> Values { get; } = new();
-
+    
     public LastWriteWinsKvStoreEngine(int nodeId, ITimeProvider timeProvider)
     {
         NodeId = nodeId;

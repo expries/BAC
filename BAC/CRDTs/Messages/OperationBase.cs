@@ -1,5 +1,9 @@
 ﻿namespace BAC.CRDTs.Messages;
 
+/// <summary>
+/// Basic structure of an operation in a key-value store
+/// </summary>
+/// <typeparam name="TMetadata"></typeparam>
 public abstract class OperationBase<TMetadata> where TMetadata : MetadataBase
 {
     public string Key { get; }
