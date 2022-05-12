@@ -1,6 +1,4 @@
-﻿using BAC.CRDTs.Messages.Metadata;
-
-namespace BAC.CRDTs.Messages;
+﻿namespace BAC.CRDTs.Messages;
 
 public abstract class OperationBase<TMetadata> where TMetadata : MetadataBase
 {
@@ -10,7 +8,7 @@ public abstract class OperationBase<TMetadata> where TMetadata : MetadataBase
     
     public OperationType Type { get; }
     
-    public TMetadata Metadata { get;}
+    public TMetadata Metadata { get; set; }
 
     protected OperationBase(string key, string value, TMetadata metadata)
     {

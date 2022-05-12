@@ -1,6 +1,6 @@
 ﻿using BAC.CRDTs.Messages.Metadata;
 
-namespace BAC.CRDTs.Messages;
+namespace BAC.CRDTs.Messages.Operations;
 
 public class PhysicalClockOperation : OperationBase<PhysicalClockMetadata>
 {
@@ -14,13 +14,11 @@ public class PhysicalClockOperation : OperationBase<PhysicalClockMetadata>
 
     public bool HappenedBefore(PhysicalClockOperation other)
     {
-        bool test = Metadata.Timestamp < other.Metadata.Timestamp; 
         return Metadata.Timestamp < other.Metadata.Timestamp;
     }
 
     public bool HappenedAfter(PhysicalClockOperation other)
     {
-        bool test = Metadata.Timestamp > other.Metadata.Timestamp;
         return Metadata.Timestamp > other.Metadata.Timestamp;
     }
 }

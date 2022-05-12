@@ -1,4 +1,4 @@
-﻿using BAC.CRDTs.Messages;
+﻿using BAC.CRDTs.Messages.Operations;
 
 namespace BAC.Clocks;
 
@@ -19,30 +19,14 @@ public class VectorClock
         Vector[_nodeId]++;
     }
 
-    public void ReceiveMessage(LamportClockOperation operation)
+    public void ReceiveMessage(VectorClockOperation operation)
     {
-        var clockCounter = GetClockCounterByNodeId(operation.Metadata.NodeId);
+        foreach (var (nodeId, counter) in operation.Metadata.Vector)
+        {
+            var localCounter = Vector.ContainsKey(nodeId) ? Vector[nodeId] : -1;
+            Vector[nodeId] = Math.Max(counter, localCounter);
+        }
         
-        if (operation.Metadata.Counter > clockCounter)
-        {
-            Vector[operation.Metadata.NodeId] = operation.Metadata.Counter;
-        }
-
         Increment();
-    }
-
-    public Dictionary<int, int> GetVector()
-    {
-        return Vector;
-    }
-
-    private int GetClockCounterByNodeId(int nodeId)
-    {
-        if (!Vector.ContainsKey(nodeId))
-        {
-            Vector[nodeId] = 0;
-        }
-
-        return Vector[nodeId];
     }
 }

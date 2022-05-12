@@ -1,49 +1,49 @@
 ﻿using BAC.Clocks;
 using BAC.CRDTs.Messages;
 using BAC.CRDTs.Messages.Metadata;
+using BAC.CRDTs.Messages.Operations;
 
 namespace BAC.CRDTs.Engines;
 
-public class PutWinsKvStoreEngine : ICrdtEngine<LamportClockOperation>
+public class PutWinsKvStoreEngine : ICrdtEngine<VectorClockOperation>
 {
 
-    private readonly LamportClock _lamportClock = new();
+    private readonly VectorClock _vectorClock;
     
     private int NodeId { get; }
 
-    public Dictionary<string, LamportClockOperation> Operations { get; } = new();
+    public Dictionary<string, VectorClockOperation> Operations { get; } = new();
 
     public Dictionary<string, string> Values { get; } = new();
     
     public PutWinsKvStoreEngine(int nodeId)
     {
+        _vectorClock = new VectorClock(nodeId);
         NodeId = nodeId;
     }
 
-    public LamportClockOperation PrepareUpdate(string key)
+    public VectorClockOperation PrepareUpdate(string key)
     {
-        _lamportClock.Increment();
-        var metadata = new LamportClockMetadata(NodeId, _lamportClock.Counter);
-        return new LamportClockOperation(key, metadata);
+        _vectorClock.Increment();
+        var metadata = new VectorClockMetadata(NodeId, _vectorClock.Vector);
+        return new VectorClockOperation(key, metadata);
     }
     
-    public LamportClockOperation PrepareUpdate(string key, string value)
+    public VectorClockOperation PrepareUpdate(string key, string value)
     {
-        _lamportClock.Increment();
-        var metadata = new LamportClockMetadata(NodeId, _lamportClock.Counter);
-        return new LamportClockOperation(key, value, metadata);
+        _vectorClock.Increment();
+        var metadata = new VectorClockMetadata(NodeId, _vectorClock.Vector);
+        return new VectorClockOperation(key, value, metadata);
     }
 
-    public LamportClockOperation PrepareUpdateFromOtherReplica(LamportClockOperation operation)
+    public VectorClockOperation ReceiveUpdate(VectorClockOperation operation)
     {
-        _lamportClock.ReceiveMessage(operation);
-        operation.Metadata.OperationId = Guid.NewGuid().ToString();
-        operation.Metadata.NodeId = NodeId;
-        operation.Metadata.Counter = _lamportClock.Counter;
+        _vectorClock.ReceiveMessage(operation);
+        operation.Metadata = new VectorClockMetadata(NodeId, _vectorClock.Vector);
         return operation;
     }
 
-    public void EffectUpdate(LamportClockOperation operation)
+    public void EffectUpdate(VectorClockOperation operation)
     {
         var updateShouldBeApplied = UpdateShouldBeApplied(operation);
 
@@ -64,7 +64,7 @@ public class PutWinsKvStoreEngine : ICrdtEngine<LamportClockOperation>
         Operations[operation.Key] = operation;
     }
 
-    private bool UpdateShouldBeApplied(LamportClockOperation operation)
+    private bool UpdateShouldBeApplied(VectorClockOperation operation)
     {
         // No conflicting operation
         if (!Operations.ContainsKey(operation.Key))
@@ -81,7 +81,7 @@ public class PutWinsKvStoreEngine : ICrdtEngine<LamportClockOperation>
         }
 
         // operation happened after stored operation
-        if (!operation.IsConcurrentTo(storedOperation))
+        if (operation.HappenedAfter(storedOperation))
         {
             return true;
         }

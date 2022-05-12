@@ -1,6 +1,7 @@
 ﻿using BAC.Clocks.PhysicalTimeProviders;
 using BAC.CRDTs.Messages;
 using BAC.CRDTs.Messages.Metadata;
+using BAC.CRDTs.Messages.Operations;
 
 namespace BAC.CRDTs.Engines;
 
@@ -34,10 +35,9 @@ public class LastWriteWinsKvStoreEngine : ICrdtEngine<PhysicalClockOperation>
         return new PhysicalClockOperation(key, value, metadata);
     }
 
-    public PhysicalClockOperation PrepareUpdateFromOtherReplica(PhysicalClockOperation operation)
+    public PhysicalClockOperation ReceiveUpdate(PhysicalClockOperation operation)
     {
         operation.Metadata.OperationId = Guid.NewGuid().ToString();
-        operation.Metadata.NodeId = NodeId;
         return operation;
     }
 

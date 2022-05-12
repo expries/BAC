@@ -7,9 +7,9 @@ public static class LastWriteWinsKvStoreDemo
 {
     public static void Show()
     {
-
+        var clockSkew = TimeSpan.FromMilliseconds(3);
         var timeProvider = new PhysicalTimeProvider();
-        var skewedProvider = new SkewedClockProvider(TimeSpan.FromMilliseconds(0));
+        var skewedProvider = new SkewedClockProvider(clockSkew);
         
         var kvA = new LastWriteWinsKvStore(1, skewedProvider);
         var kvB = new LastWriteWinsKvStore(2, timeProvider);
@@ -39,7 +39,10 @@ public static class LastWriteWinsKvStoreDemo
         kvA.Remove("b");
         
         kvB.Sync(kvA);
+        kvB.Sync(kvC);
+        
         kvC.Sync(kvB);
+        kvC.Sync(kvA);
         
         kvA.Sync(kvC);
         kvB.Sync(kvC);

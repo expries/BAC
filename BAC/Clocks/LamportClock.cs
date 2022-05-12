@@ -1,4 +1,4 @@
-﻿using BAC.CRDTs.Messages;
+﻿using BAC.CRDTs.Messages.Operations;
 
 namespace BAC.Clocks;
 

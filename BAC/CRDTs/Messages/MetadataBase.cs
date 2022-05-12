@@ -1,4 +1,4 @@
-﻿namespace BAC.CRDTs.Messages.Metadata;
+﻿namespace BAC.CRDTs.Messages;
 
 public class MetadataBase
 {

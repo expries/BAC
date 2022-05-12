@@ -1,6 +1,5 @@
 ﻿using BAC.CRDTs.Engines;
 using BAC.CRDTs.Messages;
-using BAC.CRDTs.Messages.Metadata;
 using BAC.CRDTs.Replication;
 
 namespace BAC.CRDTs;
@@ -9,7 +8,7 @@ public class ReplicatedKvStore<TOperation, TMetadata>
     where TOperation : OperationBase<TMetadata> 
     where TMetadata : MetadataBase 
 {
-    protected readonly Dictionary<int, ReplicationLog<TMetadata>> ReplicationLogs = new();
+    protected readonly Dictionary<int, ReplicationLog<TOperation, TMetadata>> ReplicationLogs = new();
 
     protected readonly ICrdtEngine<TOperation> Engine;
 
@@ -17,8 +16,8 @@ public class ReplicatedKvStore<TOperation, TMetadata>
 
     public ReplicatedKvStore(ICrdtEngine<TOperation> crdtEngine, int nodeId)
     {
-        NodeId = nodeId;
         Engine = crdtEngine;
+        NodeId = nodeId;
     }
     
     public string? Get(string key)
@@ -58,8 +57,8 @@ public class ReplicatedKvStore<TOperation, TMetadata>
     }
 
     private void SyncOperation(
-        ReplicationLog<TMetadata> log, 
-        ReplicationLog<TMetadata> replicaLog, 
+        ReplicationLog<TOperation, TMetadata> log, 
+        ReplicationLog<TOperation, TMetadata> replicaLog, 
         TOperation operation)
     {
         if (log.OperationWasApplied(operation) || replicaLog.OperationWasApplied(operation))
@@ -67,17 +66,17 @@ public class ReplicatedKvStore<TOperation, TMetadata>
             return;
         }
 
-        var preparedOperation = Engine.PrepareUpdateFromOtherReplica(operation);
+        var preparedOperation = Engine.ReceiveUpdate(operation);
         Engine.EffectUpdate(preparedOperation);
         log.Append(preparedOperation);
         replicaLog.Append(preparedOperation);
     }
     
-    private ReplicationLog<TMetadata> GetReplicationLogByNodeId(int nodeId)
+    private ReplicationLog<TOperation, TMetadata> GetReplicationLogByNodeId(int nodeId)
     {
         if (!ReplicationLogs.ContainsKey(nodeId))
         {
-            ReplicationLogs[nodeId] = new ReplicationLog<TMetadata>();
+            ReplicationLogs[nodeId] = new ReplicationLog<TOperation, TMetadata>();
         }
 
         return ReplicationLogs[nodeId];

@@ -1,4 +1,4 @@
-﻿using BAC.CRDTs.Messages;
+﻿using BAC.CRDTs.Messages.Operations;
 
 namespace BAC.CRDTs.Engines;
 
@@ -18,7 +18,7 @@ public class SiblingsKvStoreEngine : ICrdtEngine<LamportClockOperation>
         throw new NotImplementedException();
     }
 
-    public LamportClockOperation PrepareUpdateFromOtherReplica(LamportClockOperation operation)
+    public LamportClockOperation ReceiveUpdate(LamportClockOperation operation)
     {
         throw new NotImplementedException();
     }

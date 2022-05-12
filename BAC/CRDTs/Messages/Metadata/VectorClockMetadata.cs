@@ -9,6 +9,7 @@ public class VectorClockMetadata : MetadataBase
     public VectorClockMetadata(int nodeId, Dictionary<int, int> vector)
     {
         NodeId = nodeId;
-        Vector = vector;
+        Vector = new Dictionary<int, int>();
+        vector.ToList().ForEach(x => Vector[x.Key] = x.Value);
     }
 }

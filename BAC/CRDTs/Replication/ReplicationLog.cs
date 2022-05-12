@@ -1,18 +1,19 @@
 ﻿using BAC.CRDTs.Messages;
-using BAC.CRDTs.Messages.Metadata;
 
 namespace BAC.CRDTs.Replication;
 
-public class ReplicationLog<TMetadata> where TMetadata : MetadataBase
+public class ReplicationLog<TOperation, TMetadata> 
+    where TOperation : OperationBase<TMetadata> 
+    where TMetadata : MetadataBase
 {
-    private readonly List<OperationBase<TMetadata>> _operations = new();
+    private readonly List<TOperation> _operations = new();
     
-    public void Append(OperationBase<TMetadata> operation)
+    public void Append(TOperation operation)
     {
         _operations.Add(operation);
     }
 
-    public bool OperationWasApplied(OperationBase<TMetadata> operation)
+    public bool OperationWasApplied(TOperation operation)
     {
         return _operations.Any(x => x.Metadata.OperationId == operation.Metadata.OperationId);
     }

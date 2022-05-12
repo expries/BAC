@@ -35,7 +35,10 @@ public static class PutWinsKvStoreDemo
         kvA.Remove("b");
         
         kvB.Sync(kvA);
+        kvB.Sync(kvC);
+        
         kvC.Sync(kvB);
+        kvC.Sync(kvA);
         
         kvA.Sync(kvC);
         kvB.Sync(kvC);
