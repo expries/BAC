@@ -7,7 +7,7 @@ public static class LastWriteWinsKvStoreDemo
 {
     public static void Show()
     {
-        var clockSkew = TimeSpan.FromMilliseconds(3);
+        var clockSkew = TimeSpan.FromMilliseconds(0);
         var timeProvider = new PhysicalTimeProvider();
         var skewedProvider = new SkewedClockProvider(clockSkew);
         

@@ -16,7 +16,7 @@ public class VectorClockOperation : OperationBase<VectorClockMetadata>
     {
         foreach (var (nodeId, counter) in other.Metadata.Vector)
         {
-            var localCounter = Metadata.Vector.ContainsKey(nodeId) ? Metadata.Vector[nodeId] : -1;
+            var localCounter = Metadata.Vector.ContainsKey(nodeId) ? Metadata.Vector[nodeId] : 0;
             if (localCounter > counter) return false;
         }
 
@@ -27,7 +27,7 @@ public class VectorClockOperation : OperationBase<VectorClockMetadata>
     {
         foreach (var (nodeId, counter) in other.Metadata.Vector)
         {
-            var localCounter = Metadata.Vector.ContainsKey(nodeId) ? Metadata.Vector[nodeId] : -1;
+            var localCounter = Metadata.Vector.ContainsKey(nodeId) ? Metadata.Vector[nodeId] : 0;
             if (localCounter < counter) return false;
         }
 

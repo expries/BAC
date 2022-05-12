@@ -23,7 +23,7 @@ public class VectorClock
     {
         foreach (var (nodeId, counter) in operation.Metadata.Vector)
         {
-            var localCounter = Vector.ContainsKey(nodeId) ? Vector[nodeId] : -1;
+            var localCounter = Vector.ContainsKey(nodeId) ? Vector[nodeId] : 0;
             Vector[nodeId] = Math.Max(counter, localCounter);
         }
         
