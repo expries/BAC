@@ -10,7 +10,7 @@ public static class Scenario3
     {
         Console.WriteLine();
         Console.WriteLine("-----------------------------------------");
-        Console.WriteLine(" Scenario 3");
+        Console.WriteLine(" Scenario 3 [LWW CRDT - no clock skew]");
         Console.WriteLine("-----------------------------------------");
         
         var clock = new PhysicalTimeProvider();
@@ -23,7 +23,7 @@ public static class Scenario3
         kv2.Put("b", "Strawberry");
         kv1.Sync(kv2);
         kv2.Sync(kv1);
-        kv3.Sync(kv1);
+        kv3.Sync(kv2);
         
         KvStorePrinter.Print(kv1, "N1", "b");
         KvStorePrinter.Print(kv2, "N2", "b");

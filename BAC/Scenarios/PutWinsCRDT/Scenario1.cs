@@ -9,7 +9,7 @@ public static class Scenario1
     {
         Console.WriteLine();
         Console.WriteLine("-----------------------------------------");
-        Console.WriteLine(" Scenario 1");
+        Console.WriteLine(" Scenario 1 [Put-Wins CRDT]");
         Console.WriteLine("-----------------------------------------");
         
         var kv1 = new PutWinsKvStore(1);

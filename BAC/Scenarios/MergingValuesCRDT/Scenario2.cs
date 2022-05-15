@@ -9,7 +9,7 @@ public static class Scenario2
     {
         Console.WriteLine();
         Console.WriteLine("-----------------------------------------");
-        Console.WriteLine(" Scenario 2");
+        Console.WriteLine(" Scenario 2 [Merge-Values CRDT]");
         Console.WriteLine("-----------------------------------------");
         
         var kv1 = new MergingKvStore(1);

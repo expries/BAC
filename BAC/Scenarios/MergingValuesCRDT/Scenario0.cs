@@ -13,7 +13,7 @@ public static class Scenario0
     {
         Console.WriteLine();
         Console.WriteLine("-----------------------------------------");
-        Console.WriteLine(" Scenario 0");
+        Console.WriteLine(" Scenario 0 [Merge-Values CRDT]");
         Console.WriteLine("-----------------------------------------");
 
         var kv1 = new MergingKvStore(1);
