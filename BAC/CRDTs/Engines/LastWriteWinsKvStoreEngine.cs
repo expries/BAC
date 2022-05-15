@@ -1,4 +1,4 @@
-﻿using BAC.CRDTs.Clocks.PhysicalTimeProviders;
+﻿using BAC.CRDTs.Clocks.PhysicalTime;
 using BAC.CRDTs.Interfaces;
 using BAC.CRDTs.Messages;
 using BAC.CRDTs.Messages.Metadata;
@@ -57,7 +57,7 @@ public class LastWriteWinsKvStoreEngine : ICrdtEngine<PhysicalClockOperation>
         
         if (operation.Type is OperationType.Put)
         {
-            Values[operation.Key] = operation.Value;
+            Values[operation.Key] = operation.Value ?? string.Empty;
         }
         else
         {

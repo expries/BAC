@@ -1,4 +1,4 @@
-﻿namespace BAC.CRDTs.Clocks.PhysicalTimeProviders;
+﻿namespace BAC.CRDTs.Clocks.PhysicalTime;
 
 public class PhysicalTimeProvider : ITimeProvider
 {

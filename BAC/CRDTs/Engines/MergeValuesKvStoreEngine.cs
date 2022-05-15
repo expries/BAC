@@ -10,7 +10,7 @@ namespace BAC.CRDTs.Engines;
 /// A CRDT engine that prioritizes put over remove when handling concurrent writes.
 /// Concurrency is detected using vector clocks.
 /// </summary>
-public class PutWinsKvStoreEngine : ICrdtEngine<VectorClockOperation>
+public class MergeValuesKvStoreEngine : ICrdtEngine<VectorClockOperation>
 {
     private readonly VectorClock _vectorClock;
     
@@ -20,7 +20,7 @@ public class PutWinsKvStoreEngine : ICrdtEngine<VectorClockOperation>
 
     public Dictionary<string, string> Values { get; } = new();
     
-    public PutWinsKvStoreEngine(int nodeId)
+    public MergeValuesKvStoreEngine(int nodeId)
     {
         _vectorClock = new VectorClock(nodeId);
         NodeId = nodeId;
@@ -43,7 +43,16 @@ public class PutWinsKvStoreEngine : ICrdtEngine<VectorClockOperation>
     public VectorClockOperation ReceiveUpdate(VectorClockOperation operation)
     {
         _vectorClock.ReceiveMessage(operation);
-        return operation;
+
+        if (!ValuesNeedToBeMerged(operation))
+        {
+            return operation;
+        }
+
+        _vectorClock.Increment();
+        var value = operation.Value + "|" + Values[operation.Key];
+        var metadata = new VectorClockMetadata(NodeId, _vectorClock.Vector);
+        return new VectorClockOperation(operation.Key, value, metadata);
     }
 
     public void EffectUpdate(VectorClockOperation operation)
@@ -54,7 +63,7 @@ public class PutWinsKvStoreEngine : ICrdtEngine<VectorClockOperation>
         {
             return;
         }
-        
+
         if (operation.Type is OperationType.Put)
         {
             Values[operation.Key] = operation.Value ?? string.Empty;
@@ -65,6 +74,24 @@ public class PutWinsKvStoreEngine : ICrdtEngine<VectorClockOperation>
         }
 
         Operations[operation.Key] = operation;
+    }
+    
+    private bool ValuesNeedToBeMerged(VectorClockOperation operation)
+    {
+        if (!Operations.ContainsKey(operation.Key))
+        {
+            return false;
+        }
+
+        var storedOperation = Operations[operation.Key];
+
+        if (!operation.IsConcurrentTo(storedOperation))
+        {
+            return false;
+        }
+
+        var mergeValues = operation.Type is OperationType.Put && storedOperation.Type is OperationType.Put;
+        return mergeValues;
     }
 
     private bool UpdateShouldBeApplied(VectorClockOperation operation)

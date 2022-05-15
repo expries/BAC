@@ -23,6 +23,11 @@ public class VectorClockOperation : OperationBase<VectorClockMetadata>
     /// <returns></returns>
     public bool HappenedBefore(VectorClockOperation other)
     {
+        if (Metadata.Vector.Keys.Any(x => !other.Metadata.Vector.ContainsKey(x)))
+        {
+            return false;
+        }
+        
         foreach (var (nodeId, counter) in other.Metadata.Vector)
         {
             var localCounter = Metadata.Vector.ContainsKey(nodeId) ? Metadata.Vector[nodeId] : 0;
@@ -47,5 +52,10 @@ public class VectorClockOperation : OperationBase<VectorClockMetadata>
         }
 
         return true;
+    }
+
+    public bool IsConcurrentTo(VectorClockOperation other)
+    {
+        return !HappenedBefore(other) && !HappenedAfter(other);
     }
 }
