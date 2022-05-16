@@ -10,7 +10,7 @@ public static class Scenario3
     {
         Console.WriteLine();
         Console.WriteLine("-----------------------------------------");
-        Console.WriteLine(" Scenario 3 [LWW CRDT - with 3ms clock skew]");
+        Console.WriteLine(" Scenario 3 [LWW CRDT - with 3ms clock skew on N1]");
         Console.WriteLine("-----------------------------------------");
 
         var clock = new PhysicalTimeProvider();

@@ -10,13 +10,14 @@ public static class Scenario0
     {
         Console.WriteLine();
         Console.WriteLine("-----------------------------------------");
-        Console.WriteLine(" Scenario 0 [LWW CRDT - with 3ms clock skew]");
+        Console.WriteLine(" Scenario 0 [LWW CRDT - with 3ms clock skew on N2]");
         Console.WriteLine("-----------------------------------------");
         
         var clock = new PhysicalTimeProvider();
+        var skewedClock = new SkewedClockProvider(TimeSpan.FromMilliseconds(3));
 
         var kv1 = new LastWriteWinsKvStore(1, clock);
-        var kv2 = new LastWriteWinsKvStore(2, clock);
+        var kv2 = new LastWriteWinsKvStore(2, skewedClock);
         var kv3 = new LastWriteWinsKvStore(3, clock);
         
         kv1.Put("a", "Milk!");
